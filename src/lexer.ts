@@ -61,6 +61,12 @@ export function lex(input: string): Token[] {
         case "VAR":
           tokens.push({ type: TokenType.VAR });
           break;
+        case "IF":
+          tokens.push({ type: TokenType.IF });
+          break;
+        case "ELSE":
+          tokens.push({ type: TokenType.ELSE });
+          break;
         default:
           // キーワードのどれにも一致しない場合は識別子
           tokens.push({ type: TokenType.IDENTIFIER, value });
@@ -83,9 +89,45 @@ export function lex(input: string): Token[] {
 
     // 演算子をトークンとして切り出す
     switch (char) {
-      case "=":
-        tokens.push({ type: TokenType.ASSIGN });
+      case "+":
+        tokens.push({ type: TokenType.PLS });
         break;
+      case "-":
+        tokens.push({ type: TokenType.MIN });
+        break;
+      case "*":
+        tokens.push({ type: TokenType.MUL });
+        break;
+      case "/":
+        tokens.push({ type: TokenType.DIV });
+        break;
+      case "<":
+        tokens.push({ type: TokenType.LT });
+        break;
+      case ">":
+        tokens.push({ type: TokenType.GT });
+        break;
+      case "{":
+        tokens.push({ type: TokenType.LBRACE });
+        break;
+      case "}":
+        tokens.push({ type: TokenType.RBRACE });
+        break;
+      case "=":
+        if (pos + 1 < input.length && input[pos + 1] === "=") {
+          tokens.push({ type: TokenType.EQ });
+          pos++;
+          break;
+        } else {
+          tokens.push({ type: TokenType.ASSIGN });
+          break;
+        }
+      case "!":
+        if (pos + 1 < input.length && input[pos + 1] === "=") {
+          tokens.push({ type: TokenType.NE });
+          pos++;
+          break;
+        }
       default:
         // それ以外は知らない文字なのでエラー
         throw new Error(`Unexpected character: ${char}`);
