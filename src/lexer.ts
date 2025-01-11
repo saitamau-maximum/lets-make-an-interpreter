@@ -37,3 +37,6 @@ export type Token =
   | { type: TokenType.RBRACE }
   | { type: TokenType.IDENTIFIER; value: string };
 
+export function lex(input: string): Token[] {
+  return [];
+}
