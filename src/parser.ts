@@ -90,6 +90,13 @@ export function parse(tokens: Token[]): Program {
         tokens.shift();
         program.body.push(parseVariableDeclaration(tokens));
         break;
+      case TokenType.IDENTIFIER:
+      case TokenType.INT:
+        program.body.push({
+          type: "ExpressionStatement",
+          expression: parseExpression(tokens),
+        });
+        break;
       case TokenType.EOF:
         tokens.shift();
         break;
@@ -128,6 +135,62 @@ function parseVariableDeclaration(tokens: Token[]): VariableDeclaration {
   };
 }
 
+function parseExpression(tokens: Token[]): Expression {
+  let lhs = parseTerm(tokens);
+  while (true) {
+    const token = tokens.at(0);
+
+    switch (token?.type) {
+      case TokenType.PLS:
+        tokens.shift();
+        lhs = {
+          type: "AdditionExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
+      case TokenType.MIN:
+        tokens.shift();
+        lhs = {
+          type: "SubtractionExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
+      default:
+        return lhs;
+    }
+  }
+}
+
+function parseTerm(tokens: Token[]): Expression {
+  let lhs = parseValue(tokens);
+  while (true) {
+    const token = tokens.at(0);
+
+    switch (token?.type) {
+      case TokenType.MUL:
+        tokens.shift();
+        lhs = {
+          type: "MultiplicationExpression",
+          left: lhs,
+          right: parseValue(tokens),
+        };
+        break;
+      case TokenType.DIV:
+        tokens.shift();
+        lhs = {
+          type: "DivisionExpression",
+          left: lhs,
+          right: parseValue(tokens),
+        };
+        break;
+      default:
+        return lhs;
+    }
+  }
+}
+
 function parseValue(tokens: Token[]): Expression {
   const token = tokens.shift();
 
@@ -141,6 +204,6 @@ function parseValue(tokens: Token[]): Expression {
     case TokenType.IDENTIFIER:
       return { type: "Identifier", value: token.value };
     default:
-      throw new Error(`Unexpected token: ${token.type}`);
+      return parseExpression(tokens);
   }
 }

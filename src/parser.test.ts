@@ -19,4 +19,48 @@ describe("parser", () => {
       ],
     });
   });
+
+  it("should parse complex expression statement", () => {
+    const input = "2 / 4 + 2 * 3 / 4";
+    expect(parse(lex(input))).toEqual({
+      type: "Program",
+      body: [
+        {
+          type: "ExpressionStatement",
+          expression: {
+            type: "AdditionExpression",
+            left: {
+              type: "DivisionExpression",
+              left: {
+                type: "IntegerLiteral",
+                value: 2,
+              },
+              right: {
+                type: "IntegerLiteral",
+                value: 4,
+              },
+            },
+            right: {
+              type: "DivisionExpression",
+              left: {
+                type: "MultiplicationExpression",
+                left: {
+                  type: "IntegerLiteral",
+                  value: 2,
+                },
+                right: {
+                  type: "IntegerLiteral",
+                  value: 3,
+                },
+              },
+              right: {
+                type: "IntegerLiteral",
+                value: 4,
+              },
+            },
+          },
+        },
+      ],
+    });
+  });
 });
