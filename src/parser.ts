@@ -126,7 +126,7 @@ function expectToken<T extends TokenType>(
 function parseVariableDeclaration(tokens: Token[]): VariableDeclaration {
   const identifier = expectToken(tokens.shift(), TokenType.IDENTIFIER);
   expectToken(tokens.shift(), TokenType.ASSIGN);
-  const value = parseValue(tokens);
+  const value = parseExpression(tokens);
 
   return {
     type: "VariableDeclaration",

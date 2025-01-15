@@ -63,4 +63,28 @@ describe("parser", () => {
       ],
     });
   });
+
+  it("should parse variable declaration with expression", () => {
+    const input = "VAR a = 1 + 2";
+    expect(parse(lex(input))).toEqual({
+      type: "Program",
+      body: [
+        {
+          type: "VariableDeclaration",
+          identifier: "a",
+          value: {
+            type: "AdditionExpression",
+            left: {
+              type: "IntegerLiteral",
+              value: 1,
+            },
+            right: {
+              type: "IntegerLiteral",
+              value: 2,
+            },
+          },
+        },
+      ],
+    });
+  });
 });
