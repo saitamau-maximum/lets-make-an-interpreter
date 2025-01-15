@@ -87,4 +87,26 @@ describe("parser", () => {
       ],
     });
   });
+
+  it("should parse block statement", () => {
+    const input = "{ VAR a = 1 }";
+    expect(parse(lex(input))).toEqual({
+      type: "Program",
+      body: [
+        {
+          type: "BlockStatement",
+          body: [
+            {
+              type: "VariableDeclaration",
+              identifier: "a",
+              value: {
+                type: "IntegerLiteral",
+                value: 1,
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
