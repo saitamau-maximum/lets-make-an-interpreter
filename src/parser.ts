@@ -1,4 +1,4 @@
-import { Token } from "./lexer";
+import { Token, TokenType } from "./lexer";
 
 export type Program = {
   type: "Program";
@@ -64,7 +64,7 @@ export type IfStatement = {
   type: "IfStatement";
   condition: Expression;
   consequent: BlockStatement;
-  alternate: BlockStatement;
+  alternate?: BlockStatement;
 };
 
 export type BlockStatement = {
@@ -73,8 +73,74 @@ export type BlockStatement = {
 };
 
 export function parse(tokens: Token[]): Program {
-  return {
+  const program: Program = {
     type: "Program",
     body: [],
   };
+
+  while (tokens.length > 0) {
+    const token = tokens.at(0);
+
+    if (!token) {
+      break;
+    }
+
+    switch (token.type) {
+      case TokenType.VAR:
+        tokens.shift();
+        program.body.push(parseVariableDeclaration(tokens));
+        break;
+      case TokenType.EOF:
+        tokens.shift();
+        break;
+      default:
+        throw new Error(`Unexpected token: ${token.type}`);
+    }
+  }
+
+  return program;
+}
+
+function expectToken<T extends TokenType>(
+  token: Token | undefined,
+  type: T
+): Extract<Token, { type: T }> {
+  if (!token) {
+    throw new Error(`Unexpected end of input. Expected ${type}`);
+  }
+
+  if (token.type !== type) {
+    throw new Error(`Unexpected token: ${token.type}. Expected ${type}`);
+  }
+
+  return token as Extract<Token, { type: T }>;
+}
+
+function parseVariableDeclaration(tokens: Token[]): VariableDeclaration {
+  const identifier = expectToken(tokens.shift(), TokenType.IDENTIFIER);
+  expectToken(tokens.shift(), TokenType.ASSIGN);
+  const value = parseValue(tokens);
+
+  return {
+    type: "VariableDeclaration",
+    identifier: identifier.value,
+    value,
+  };
+}
+
+function parseValue(tokens: Token[]): Expression {
+  const token = tokens.shift();
+
+  if (!token) {
+    throw new Error("Unexpected end of input");
+  }
+
+  switch (token.type) {
+    case TokenType.INT:
+      return { type: "IntegerLiteral", value: token.value };
+    case TokenType.IDENTIFIER:
+      return { type: "Identifier", value: token.value };
+    default:
+      throw new Error(`Unexpected token: ${token.type}`);
+  }
 }
