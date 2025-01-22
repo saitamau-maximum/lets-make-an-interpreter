@@ -109,4 +109,109 @@ describe("parser", () => {
       ],
     });
   });
+
+  describe("should parse if statement", () => {
+    it("with if only", () => {
+      const input = "IF a < b { a + b }";
+      expect(parse(lex(input))).toEqual({
+        type: "Program",
+        body: [
+          {
+            type: "IfStatement",
+            condition: {
+              type: "LessThanExpression",
+              left: {
+                type: "Identifier",
+                value: "a",
+              },
+              right: {
+                type: "Identifier",
+                value: "b",
+              },
+            },
+            consequent: {
+              type: "BlockStatement",
+              body: [
+                {
+                  type: "ExpressionStatement",
+                  expression: {
+                    type: "AdditionExpression",
+                    left: {
+                      type: "Identifier",
+                      value: "a",
+                    },
+                    right: {
+                      type: "Identifier",
+                      value: "b",
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
+    it("with if and else", () => {
+      const input = "IF a < b { a + b } ELSE { a - b }";
+      expect(parse(lex(input))).toEqual({
+        type: "Program",
+        body: [
+          {
+            type: "IfStatement",
+            condition: {
+              type: "LessThanExpression",
+              left: {
+                type: "Identifier",
+                value: "a",
+              },
+              right: {
+                type: "Identifier",
+                value: "b",
+              },
+            },
+            consequent: {
+              type: "BlockStatement",
+              body: [
+                {
+                  type: "ExpressionStatement",
+                  expression: {
+                    type: "AdditionExpression",
+                    left: {
+                      type: "Identifier",
+                      value: "a",
+                    },
+                    right: {
+                      type: "Identifier",
+                      value: "b",
+                    },
+                  },
+                },
+              ],
+            },
+            alternate: {
+              type: "BlockStatement",
+              body: [
+                {
+                  type: "ExpressionStatement",
+                  expression: {
+                    type: "SubtractionExpression",
+                    left: {
+                      type: "Identifier",
+                      value: "a",
+                    },
+                    right: {
+                      type: "Identifier",
+                      value: "b",
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+  });
 });

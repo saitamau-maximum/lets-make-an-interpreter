@@ -122,6 +122,8 @@ function parseStatement(tokens: Token[]): Statement {
         type: "BlockStatement",
         body: parseBlock(tokens),
       };
+    case TokenType.IF:
+      return parseIfStatement(tokens);
     default:
       throw new Error(`Unexpected token: ${token.type}`);
   }
@@ -202,6 +204,38 @@ function parseExpression(tokens: Token[]): Expression {
           right: parseTerm(tokens),
         };
         break;
+      case TokenType.LT:
+        tokens.shift();
+        lhs = {
+          type: "LessThanExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
+      case TokenType.GT:
+        tokens.shift();
+        lhs = {
+          type: "GreaterThanExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
+      case TokenType.EQ:
+        tokens.shift();
+        lhs = {
+          type: "EqualExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
+      case TokenType.NE:
+        tokens.shift();
+        lhs = {
+          type: "NotEqualExpression",
+          left: lhs,
+          right: parseTerm(tokens),
+        };
+        break;
       default:
         return lhs;
     }
@@ -251,4 +285,32 @@ function parseValue(tokens: Token[]): Expression {
     default:
       return parseExpression(tokens);
   }
+}
+
+function parseIfStatement(tokens: Token[]): IfStatement {
+  expectToken(tokens.shift(), TokenType.IF);
+  const condition = parseExpression(tokens);
+  const consequent: BlockStatement = {
+    type: "BlockStatement",
+    body: parseBlock(tokens),
+  };
+
+  if (tokens.at(0)?.type === TokenType.ELSE) {
+    tokens.shift();
+    return {
+      type: "IfStatement",
+      condition,
+      consequent,
+      alternate: {
+        type: "BlockStatement",
+        body: parseBlock(tokens),
+      },
+    };
+  }
+
+  return {
+    type: "IfStatement",
+    condition,
+    consequent,
+  };
 }
