@@ -88,25 +88,89 @@ describe("parser", () => {
     });
   });
 
-  it("should parse block statement", () => {
-    const input = "{ VAR a = 1 }";
-    expect(parse(lex(input))).toEqual({
-      type: "Program",
-      body: [
-        {
-          type: "BlockStatement",
-          body: [
-            {
-              type: "VariableDeclaration",
-              identifier: "a",
-              value: {
-                type: "IntegerLiteral",
-                value: 1,
+  describe("should parse block statement", () => {
+    it("inline block", () => {
+      const input = "{ VAR a = 1 }";
+      expect(parse(lex(input))).toEqual({
+        type: "Program",
+        body: [
+          {
+            type: "BlockStatement",
+            body: [
+              {
+                type: "VariableDeclaration",
+                identifier: "a",
+                value: {
+                  type: "IntegerLiteral",
+                  value: 1,
+                },
               },
-            },
-          ],
-        },
-      ],
+            ],
+          },
+        ],
+      });
+    });
+
+    it("nested block", () => {
+      const input = "{ { VAR a = 1 } }";
+      expect(parse(lex(input))).toEqual({
+        type: "Program",
+        body: [
+          {
+            type: "BlockStatement",
+            body: [
+              {
+                type: "BlockStatement",
+                body: [
+                  {
+                    type: "VariableDeclaration",
+                    identifier: "a",
+                    value: {
+                      type: "IntegerLiteral",
+                      value: 1,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it("multiple statements", () => {
+      const input = `
+{
+  VAR a = 1
+  VAR b = 2
+}
+`.trim();
+      expect(parse(lex(input))).toEqual({
+        type: "Program",
+        body: [
+          {
+            type: "BlockStatement",
+            body: [
+              {
+                type: "VariableDeclaration",
+                identifier: "a",
+                value: {
+                  type: "IntegerLiteral",
+                  value: 1,
+                },
+              },
+              {
+                type: "VariableDeclaration",
+                identifier: "b",
+                value: {
+                  type: "IntegerLiteral",
+                  value: 2,
+                },
+              },
+            ],
+          },
+        ],
+      });
     });
   });
 
@@ -212,6 +276,92 @@ describe("parser", () => {
           },
         ],
       });
+    });
+  });
+
+  it("should parse complex program", () => {
+    const input = `
+VAR a = 1
+VAR b = 2
+
+IF a < b {
+  a + b
+} ELSE {
+  a - b
+}
+`.trim();
+    expect(parse(lex(input))).toEqual({
+      type: "Program",
+      body: [
+        {
+          type: "VariableDeclaration",
+          identifier: "a",
+          value: {
+            type: "IntegerLiteral",
+            value: 1,
+          },
+        },
+        {
+          type: "VariableDeclaration",
+          identifier: "b",
+          value: {
+            type: "IntegerLiteral",
+            value: 2,
+          },
+        },
+        {
+          type: "IfStatement",
+          condition: {
+            type: "LessThanExpression",
+            left: {
+              type: "Identifier",
+              value: "a",
+            },
+            right: {
+              type: "Identifier",
+              value: "b",
+            },
+          },
+          consequent: {
+            type: "BlockStatement",
+            body: [
+              {
+                type: "ExpressionStatement",
+                expression: {
+                  type: "AdditionExpression",
+                  left: {
+                    type: "Identifier",
+                    value: "a",
+                  },
+                  right: {
+                    type: "Identifier",
+                    value: "b",
+                  },
+                },
+              },
+            ],
+          },
+          alternate: {
+            type: "BlockStatement",
+            body: [
+              {
+                type: "ExpressionStatement",
+                expression: {
+                  type: "SubtractionExpression",
+                  left: {
+                    type: "Identifier",
+                    value: "a",
+                  },
+                  right: {
+                    type: "Identifier",
+                    value: "b",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      ],
     });
   });
 });
