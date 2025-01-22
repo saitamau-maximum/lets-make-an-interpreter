@@ -85,6 +85,11 @@ export function parse(tokens: Token[]): Program {
       break;
     }
 
+    if (token.type === TokenType.EOL) {
+      tokens.shift();
+      continue;
+    }
+
     if (token.type === TokenType.EOF) {
       break;
     }
@@ -147,6 +152,11 @@ function parseBlock(tokens: Token[]): Statement[] {
 
     if (!token) {
       throw new Error("Unexpected end of input");
+    }
+
+    if (token.type === TokenType.EOL) {
+      tokens.shift();
+      continue;
     }
 
     if (token.type === TokenType.RBRACE) {

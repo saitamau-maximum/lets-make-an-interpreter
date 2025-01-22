@@ -86,30 +86,36 @@ IF a < b {
 } ELSE {
   a - b
 }
-`;
+`.trim();
     expect(lex(input)).toEqual([
       { type: TokenType.VAR },
       { type: TokenType.IDENTIFIER, value: "a" },
       { type: TokenType.ASSIGN },
       { type: TokenType.INT, value: 1 },
+      { type: TokenType.EOL },
       { type: TokenType.VAR },
       { type: TokenType.IDENTIFIER, value: "b" },
       { type: TokenType.ASSIGN },
       { type: TokenType.INT, value: 2 },
+      { type: TokenType.EOL },
       { type: TokenType.IF },
       { type: TokenType.IDENTIFIER, value: "a" },
       { type: TokenType.LT },
       { type: TokenType.IDENTIFIER, value: "b" },
       { type: TokenType.LBRACE },
+      { type: TokenType.EOL },
       { type: TokenType.IDENTIFIER, value: "a" },
       { type: TokenType.PLS },
       { type: TokenType.IDENTIFIER, value: "b" },
+      { type: TokenType.EOL },
       { type: TokenType.RBRACE },
       { type: TokenType.ELSE },
       { type: TokenType.LBRACE },
+      { type: TokenType.EOL },
       { type: TokenType.IDENTIFIER, value: "a" },
       { type: TokenType.MIN },
       { type: TokenType.IDENTIFIER, value: "b" },
+      { type: TokenType.EOL },
       { type: TokenType.RBRACE },
       { type: TokenType.EOF },
     ]);

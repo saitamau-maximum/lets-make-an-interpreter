@@ -11,6 +11,7 @@ export enum TokenType {
   IF = "IF",
   ELSE = "ELSE",
   VAR = "VAR",
+  EOL = "EOL",
   EOF = "EOF",
   ASSIGN = "ASSIGN",
   LBRACE = "LBRACE",
@@ -31,6 +32,7 @@ export type Token =
   | { type: TokenType.IF }
   | { type: TokenType.ELSE }
   | { type: TokenType.VAR }
+  | { type: TokenType.EOL }
   | { type: TokenType.EOF }
   | { type: TokenType.ASSIGN }
   | { type: TokenType.LBRACE }
@@ -44,7 +46,13 @@ export function lex(input: string): Token[] {
   while (pos < input.length) {
     const char = input[pos];
 
-    if (char === " " || char === "\t" || char === "\n") {
+    if (char === " " || char === "\t") {
+      pos++;
+      continue;
+    }
+
+    if (char === "\n") {
+      tokens.push({ type: TokenType.EOL });
       pos++;
       continue;
     }
