@@ -13,4 +13,14 @@ describe("evaluate", () => {
     const input = "1";
     expect(evaluate(parse(lex(input)))).toEqual(1);
   });
+
+  it("should evaluate addition expression", () => {
+    const input = "1 + 2";
+    expect(evaluate(parse(lex(input)))).toEqual(3);
+  });
+
+  it("should evaluate complex expression", () => {
+    const input = "2 / 4 + 2 * 3 / 4 - 1";
+    expect(evaluate(parse(lex(input)))).toEqual(1);
+  });
 });

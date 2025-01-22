@@ -23,6 +23,26 @@ const evaluateExpression = (expression: Expression, env: Env): number => {
   switch (expression.type) {
     case "IntegerLiteral":
       return expression.value;
+    case "AdditionExpression":
+      return (
+        evaluateExpression(expression.left, env) +
+        evaluateExpression(expression.right, env)
+      );
+    case "SubtractionExpression":
+      return (
+        evaluateExpression(expression.left, env) -
+        evaluateExpression(expression.right, env)
+      );
+    case "MultiplicationExpression":
+      return (
+        evaluateExpression(expression.left, env) *
+        evaluateExpression(expression.right, env)
+      );
+    case "DivisionExpression":
+      return (
+        evaluateExpression(expression.left, env) /
+        evaluateExpression(expression.right, env)
+      );
     default:
       throw new Error(`Unknown expression: ${expression}`);
   }
