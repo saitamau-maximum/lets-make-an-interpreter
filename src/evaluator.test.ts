@@ -23,4 +23,26 @@ describe("evaluate", () => {
     const input = "2 / 4 + 2 * 3 / 4 - 1";
     expect(evaluate(parse(lex(input)))).toEqual(1);
   });
+
+  it("should evaluate variable declaration", () => {
+    const input = "VAR a = 1";
+    expect(evaluate(parse(lex(input)))).toEqual(1);
+  });
+
+  it("should evaluate variable assignment and usage", () => {
+    const input = `
+VAR a = 1
+a
+`.trim();
+    expect(evaluate(parse(lex(input)))).toEqual(1);
+  });
+
+  it("should evaluate variable assignment and use in expression", () => {
+    const input = `
+VAR a = 1
+VAR b = 2
+a + b
+`.trim();
+    expect(evaluate(parse(lex(input)))).toEqual(3);
+  });
 });
